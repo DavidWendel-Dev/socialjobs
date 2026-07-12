@@ -1,0 +1,61 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+
+# Uploads e cache do Laravel (nunca vai pro Git)
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+/storage/app/*
+!/storage/app/.gitkeep
+!/storage/app/public/
+/storage/framework/cache/*
+!/storage/framework/cache/.gitkeep
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
+/storage/framework/testing/*
+!/storage/framework/testing/.gitkeep
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+/vendor
+
+# ENVs — nada de credenciais vazando
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# IDE / OS
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/auth.json
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+.DS_Store
+Thumbs.db
+
+# Artefatos temporários criados durante debug/deploy
+/r2test.php
+*.bak
+*.tmp
+*.tar.gz
+*.zip
+
+# Arquivos pessoais
+*.docx
+*.doc
+curriculo_*

@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --brand: #22C55E;
+        --accent: #F97316;
+        --ink: #0F172A;
+        --paper: #FAFAF7;
+        --ink-dark: #0B1220;
+    }
+
+    /* Trava anti-rolagem-horizontal em qualquer tela.
+       Sem isso, qualquer elemento com width > viewport quebra o layout mobile. */
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Garante que imagens/vídeos nunca vazem do container pai */
+    img, video, iframe, svg, canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Quebra palavras longas em vez de estourar largura */
+    p, h1, h2, h3, h4, li, span, a {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
+
+    html {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        background-color: var(--paper);
+        color: var(--ink);
+    }
+
+    .dark body {
+        background-color: var(--ink-dark);
+        color: #E2E8F0;
+    }
+
+    h1, h2, h3, h4, .font-display {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        letter-spacing: -0.02em;
+    }
+
+    code, pre, .font-mono {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 disabled:opacity-50;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-soft ring-1 ring-slate-200 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:text-slate-200 dark:hover:bg-slate-800;
+    }
+
+    .card {
+        @apply rounded-2xl bg-white p-4 sm:p-6 shadow-soft ring-1 ring-slate-100 dark:bg-slate-900 dark:ring-slate-800;
+    }
+
+    .chip {
+        @apply inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200;
+    }
+
+    .input {
+        @apply w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100;
+    }
+
+    .noise-bg {
+        background-image: radial-gradient(1200px 600px at 20% 0%, rgba(34, 197, 94, 0.18), transparent 60%),
+                          radial-gradient(1200px 600px at 80% 30%, rgba(249, 115, 22, 0.15), transparent 60%);
+    }
+}
+
+@layer utilities {
+    /* Esconde scrollbar mantendo scroll horizontal — útil em barras de abas */
+    .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+}

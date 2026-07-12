@@ -1,0 +1,136 @@
+# =============================================================================
+# CI — SocialJobs
+# =============================================================================
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build, lint & test
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: SocialJobs_test
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      APP_ENV: testing
+      APP_DEBUG: "true"
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: SocialJobs_test
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      BROADCAST_CONNECTION: log
+      MAIL_MAILER: array
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------------
+      # PHP 8.3
+      # ---------------------------------------------------------------------
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, intl, pdo_mysql, redis, gd, bcmath, exif, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Composer install
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      # ---------------------------------------------------------------------
+      # Node 22 + build de assets
+      # ---------------------------------------------------------------------
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: NPM install
+        run: npm ci --no-audit --no-fund
+
+      - name: Build assets (Vite)
+        run: npm run build
+
+      # ---------------------------------------------------------------------
+      # Preparação Laravel
+      # ---------------------------------------------------------------------
+      - name: Copy env
+        run: |
+          test -f .env || cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Migrate
+        run: php artisan migrate --force --no-interaction
+
+      # ---------------------------------------------------------------------
+      # Lint / Static Analysis
+      # ---------------------------------------------------------------------
+      - name: Laravel Pint (--test)
+        run: ./vendor/bin/pint --test
+
+      - name: Larastan (level 6)
+        run: |
+          if [ -f ./vendor/bin/phpstan ]; then
+            ./vendor/bin/phpstan analyse --level=6 --no-progress
+          else
+            echo "phpstan not installed — skipping"
+          fi
+
+      # ---------------------------------------------------------------------
+      # Testes
+      # ---------------------------------------------------------------------
+      - name: Pest tests
+        run: php artisan test --no-interaction
+
+      # ---------------------------------------------------------------------
+      # Auditoria de dependências
+      # ---------------------------------------------------------------------
+      - name: Composer audit
+        run: composer audit --no-interaction || true

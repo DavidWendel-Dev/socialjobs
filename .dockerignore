@@ -1,0 +1,60 @@
+# =============================================================================
+# .dockerignore — SocialJobs
+# =============================================================================
+node_modules
+vendor
+.git
+.gitignore
+.gitattributes
+.idea
+.vscode
+.trae
+tests
+
+# Storage runtime
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/framework/testing/*
+storage/app/public/*
+!storage/app/public/.gitignore
+
+# Env / secrets
+.env
+.env.example
+.env.docker
+
+# Docker overrides
+docker-compose.override.yml
+docker-compose.dev.yml
+
+# CI / docs / build noise
+.github
+.editorconfig
+README.md
+CHANGELOG.md
+*.md
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs / dumps
+*.log
+npm-debug.log*
+yarn-*.log
+dump.rdb
+database/database.sqlite
+
+# Coverage / cache
+coverage
+.phpunit.cache
+.phpunit.result.cache
+.pest.cache
+.php-cs-fixer.cache
